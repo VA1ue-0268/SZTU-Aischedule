@@ -1,6 +1,7 @@
 function scheduleHtmlParser(html) {
+    //读取课表
     let $raw = $('.kbcontent').toArray();
-    console.log($raw)
+    //console.log($raw)
     let courses = [];
     let name = "";
     let teacher = "";
@@ -9,8 +10,10 @@ function scheduleHtmlParser(html) {
     let position = "";
     let day = "";
 
+    //遍历元素
     for (index in $raw){
         data = $raw[index];
+        //判断是否为空（或者没课）
         if (data.children.length == 0){
             continue;
         }
@@ -21,6 +24,7 @@ function scheduleHtmlParser(html) {
         }
         
         name = data.children[0].data;
+        //获得全部children信息
         let extract = _extract_data(data);
         console.log(typeof name);
         for (var i=0; i<extract.length; i++){
@@ -35,6 +39,7 @@ function scheduleHtmlParser(html) {
             }else if (extract[i] == "教室"){
                 position = extract[i+1];
             }
+            //行业认知课地点为待定
             try{
                 if(name.indexOf("行业认知") != -1){
                     position = "待定";
@@ -42,6 +47,7 @@ function scheduleHtmlParser(html) {
             }catch{
                 
             }
+            //要素集齐后加入汇总中
             if(name != "" && teacher != "" && weeks != "" && sections != "" && position != ""){
                 weeks = weeks.match(/(\S*)\[/);
                 weeks = weeks[1].replace('(周)', '');
@@ -84,8 +90,7 @@ function scheduleHtmlParser(html) {
 
     }
 
-    
-
+    //加上时间
     Result = {
         "courseInfos": courses,
         "sectionTimes": createSectionTimes()
@@ -94,7 +99,7 @@ function scheduleHtmlParser(html) {
     return Result;
 }
 
-
+//遍历children把元素添加到arr中返回
 function _extract_data(node) {
     var child = node.children,
         arr = [];
@@ -113,6 +118,7 @@ function _extract_data(node) {
     return arr;
 }
 
+//返回周（纯数字）
 function _get_week(data) {
     let result = [];
     let raw = data.split(',');
@@ -134,6 +140,7 @@ function _get_week(data) {
 
 }
 
+//按格式返回第几节
 function _get_section(data) {
     let section = []
     let num = 0;
@@ -146,6 +153,7 @@ function _get_section(data) {
     return section;
 }
 
+//根据元素位置推算是星期几
 function _get_day(index) {
     day = index / 2;
     day = day + 1;
@@ -156,6 +164,7 @@ function _get_day(index) {
     return day
 }
 
+//作息时间
 function createSectionTimes() {
     let sectionTimes = [
         {
